@@ -1,0 +1,53 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cloudflare-ddns
+  labels:
+    app: cloudflare-ddns
+    part-of: cloudflare-ddns
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/pollSchedule: "@hourly"
+    keel.sh/match-tag: true
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflare-ddns
+      part-of: cloudflare-ddns
+  template:
+    metadata:
+      labels:
+        app: cloudflare-ddns
+        part-of: cloudflare-ddns
+    spec:
+      serviceAccountName: cloudflare-ddns
+      containers:
+      - name: cloudflare-ddns
+        image: oznu/cloudflare-ddns:latest
+        ports:
+        - name: cloudflare-ddns
+          containerPort: 8191
+        env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cloudflare-ddns
+              key: API_KEY
+        - name: ZONE
+          valueFrom:
+            secretKeyRef:
+              name: cloudflare-ddns
+              key: ZONE
+        volumeMounts:
+        - name: cloudflare-ddns-secrets
+          mountPath: "/mnt/vault"
+          readOnly: true
+      volumes:
+      - name: cloudflare-ddns-secrets
+        csi:
+          driver: "secrets-store.csi.k8s.io"
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "cloudflare-ddns"

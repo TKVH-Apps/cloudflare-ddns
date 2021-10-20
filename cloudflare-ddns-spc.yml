@@ -1,0 +1,25 @@
+apiVersion: secrets-store.csi.x-k8s.io/v1alpha1
+kind: SecretProviderClass
+metadata:
+  name: cloudflare-ddns
+spec:
+  provider: vault
+  secretObjects:
+  - secretName: cloudflare-ddns
+    type: Opaque
+    data: 
+    - objectName: API_KEY
+      key: API_KEY
+    - objectName: ZONE
+      key: ZONE
+  parameters:
+    vaultAddress: 'http://vault.vault:8200'
+    vaultKubernetesMountPath: 'k8s-vault-csi'
+    roleName: cloudflare-ddns
+    objects: |
+      - objectName: "API_KEY"
+        secretPath: "apps-kv/data/cloudflare-ddns/api"
+        secretKey: "API_KEY"
+      - objectName: "ZONE"
+        secretPath: "apps-kv/data/cloudflare-ddns/api"
+        secretKey: "ZONE"
