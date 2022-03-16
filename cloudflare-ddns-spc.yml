@@ -21,5 +21,5 @@ spec:
         secretPath: "apps-kv/data/cloudflare-ddns/api"
         secretKey: "API_KEY"
       - objectName: "ZONE"
-        secretPath: "apps-kv/data/cloudflare-ddns/api"
-        secretKey: "ZONE"
+        secretPath: "apps-kv/data/general"
+        secretKey: "DN"
